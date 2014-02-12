@@ -61,7 +61,7 @@ class ColorKinetics(Controller):
       self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       self.sock.connect((host, port))
 
-      self.channels = [Channel(i) for i in xrange(512)]
+      self.channels = [Channel(0) for i in xrange(512)]
 
    def sync(self):
       header = struct.pack(">IHHIBBHIB",
