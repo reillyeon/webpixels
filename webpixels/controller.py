@@ -1,4 +1,4 @@
-from basic import Channel, Controller
+from . import Channel, Controller
 import socket
 import struct
 

@@ -1,6 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
-from basic import *
-from controller import ColorKinetics
+from webpixels import RgbPixel
+from webpixels.controller import ColorKinetics
 import re
 
 app = Flask(__name__)
@@ -26,10 +26,15 @@ def rgb_to_hex_triplet(r, g, b):
 
 @app.route('/')
 def index():
+   values = [pixel.get() for pixel in pixels]
    pixel_list = []
    for i in range(len(pixels)):
-      pixel_list.append((str(i), rgb_to_hex_triplet(*pixels[i].get())))
-   return render_template('index.html', pixels=pixel_list)
+      pixel_list.append((str(i), rgb_to_hex_triplet(*values[i])))
+   r = sum([pixel[0] for pixel in values]) / len(values)
+   g = sum([pixel[1] for pixel in values]) / len(values)
+   b = sum([pixel[2] for pixel in values]) / len(values)
+   average = rgb_to_hex_triplet(r, g, b)
+   return render_template('index.html', pixels=pixel_list, average=average)
 
 @app.route('/pixel/all', methods=['POST'])
 def all_pixels():
@@ -49,6 +54,16 @@ def pixel(pixel):
    else:
       rgb = pixels[pixel].get()
       return rgb_to_hex_triplet(*rgb)
+
+@app.route('/pixels', methods=['POST'])
+def set_pixels():
+   for i in range(len(pixels)):
+      key = 'color_%d' % i
+      if key in request.form.keys():
+         r, g, b = hex_triplet_to_rgb(request.form[key])
+         pixels[i].set(r, g, b)
+   controller.sync()
+   return redirect(url_for('index'))
 
 @app.route('/reset', methods=['POST'])
 def pixel_reset():
