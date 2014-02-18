@@ -30,14 +30,13 @@ def index():
    pixel_list = []
    for i in range(len(pixels)):
       pixel_list.append((str(i), rgb_to_hex_triplet(*values[i])))
-   r = sum([pixel[0] for pixel in values]) / len(values)
-   g = sum([pixel[1] for pixel in values]) / len(values)
-   b = sum([pixel[2] for pixel in values]) / len(values)
-   average = rgb_to_hex_triplet(r, g, b)
+   average = tuple([sum([pixel[i] for pixel in values]) / len(values)
+                    for i in range(3)])
+   average = rgb_to_hex_triplet(*average)
    return render_template('index.html', pixels=pixel_list, average=average)
 
 @app.route('/pixel/all', methods=['POST'])
-def all_pixels():
+def set_all_pixels():
    r, g, b = hex_triplet_to_rgb(request.form['color'])
    for pixel in pixels:
       pixel.set(r, g, b)
@@ -64,13 +63,6 @@ def set_pixels():
          pixels[i].set(r, g, b)
    controller.sync()
    return redirect(url_for('index'))
-
-@app.route('/reset', methods=['POST'])
-def pixel_reset():
-   for pixel in pixels:
-      pixel.set(0, 0, 0)
-   controller.sync()
-   return ''
 
 if __name__ == '__main__':
    controller.sync()
