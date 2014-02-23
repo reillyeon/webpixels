@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import re
 
 class Channel(object):
    def __init__(self, controller, value=0):
@@ -27,9 +28,22 @@ class Pixel(object):
    def set(self, red, green, blue):
       pass
 
+   hex_triplet_pattern = re.compile(r'^#([0-9a-fA-F]{6})$')
+   def set_html_color(self, color):
+      match = Pixel.hex_triplet_pattern.match(color)
+      if match:
+         value = int(match.group(1), 16)
+         self.set(value >> 16, value >> 8 & 0xff, value & 0xff)
+      else:
+         raise ValueError('Invalid color')
+
    @abstractmethod
    def get(self):
       pass
+
+   def get_html_color(self):
+      r, g, b = self.get()
+      return '#%02x%02x%02x' % (r, g, b)
 
    @abstractmethod
    def get_controllers(self):
@@ -60,6 +74,25 @@ class RgbPixel(Pixel):
 
    def get(self):
       return self.red.get(), self.green.get(), self.blue.get()
+
+   def get_controllers(self):
+      return self.controllers
+
+class AveragePixel(Pixel):
+   def __init__(self, pixels):
+      self.pixels = pixels
+      self.controllers = set()
+      for pixel in pixels:
+         self.controllers.update(pixel.get_controllers())
+
+   def set(self, red, green, blue):
+      for pixel in self.pixels:
+         pixel.set(red, green, blue)
+
+   def get(self):
+      values = [pixel.get() for pixel in self.pixels]
+      rgb = tuple(sum(values) for values in zip(*values))
+      return tuple(value / len(self.pixels) for value in rgb)
 
    def get_controllers(self):
       return self.controllers

@@ -9,10 +9,11 @@
   <input type="submit" />
 </form>
 <form method="POST" action="pixels">
-{% for pixel, color in pixels %}
-  {{ pixel }}: <input type="color" name="color_{{ pixel }}" value="{{ color }}" />
-{% endfor %}
-<input type="submit" />
+  {% for pixel, color in pixels %}
+  {{ pixel }}:
+  <input type="color" name="color_{{ pixel }}" value="{{ color }}" />
+  {% endfor %}
+  <input type="submit" />
 </form>
 </body>
 </html>

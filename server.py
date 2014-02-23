@@ -1,7 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
 import json
-import re
-from webpixels import RgbPixel
+from webpixels import AveragePixel, RgbPixel
 from webpixels.controller import ColorKinetics
 
 app = Flask(__name__)
@@ -25,49 +24,27 @@ def load_config(config_file):
       chan_set = [channels[name] for name in pixelConfig['channels']]
       pixels[pixelConfig['name']] = RgbPixel(*chan_set)
 
-hex_triplet_pattern = re.compile(r'^#([0-9a-fA-F]{6})$')
-def hex_triplet_to_rgb(hex):
-   match = hex_triplet_pattern.match(hex)
-   if match:
-      value = int(match.group(1), 16)
-      return value >> 16, value >> 8 & 0xff, value & 0xff
-   else:
-      raise ValueError('Invalid color')
-
-def rgb_to_hex_triplet(r, g, b):
-   return '#%02x%02x%02x' % (r, g, b)
+   all_pixel = AveragePixel(list(pixels.values()))
+   pixels['all'] = all_pixel
 
 @app.route('/')
 def index():
-   pixel_list = [(name, pixel.get()) for name, pixel in pixels.items()]
+   pixel_list = [(name, pixel.get_html_color())
+                 for name, pixel in pixels.items()
+                 if name != 'all']
    pixel_list.sort(key=lambda pixel: pixel[0])
-   average = tuple([sum([pixel[i] for name, pixel in pixel_list]) / len(pixel_list)
-                    for i in range(3)])
-   average = rgb_to_hex_triplet(*average)
-   pixel_list = [(name, rgb_to_hex_triplet(*pixel)) for name, pixel in pixel_list]
-   return render_template('index.html', pixels=pixel_list, average=average)
-
-@app.route('/pixel/all', methods=['POST'])
-def set_all_pixels():
-   r, g, b = hex_triplet_to_rgb(request.form['color'])
-   controllers = set()
-   for pixel in pixels.values():
-      pixel.set(r, g, b)
-      controllers.update(pixel.get_controllers())
-   for controller in controllers:
-      controller.sync()
-   return redirect(url_for('index'))
+   return render_template('index.html',
+                          pixels=pixel_list,
+                          average=pixels['all'].get_html_color())
 
 @app.route('/pixel/<pixel>', methods=['GET', 'POST'])
 def pixel(pixel):
    if request.method == 'POST':
-      r, g, b = hex_triplet_to_rgb(request.form['color'])
-      pixels[pixel].set(r, g, b)
+      pixels[pixel].set_html_color(request.form['color'])
       pixels[pixel].sync()
       return redirect(url_for('index'))
    else:
-      rgb = pixels[pixel].get()
-      return rgb_to_hex_triplet(*rgb)
+      return pixels[pixel].get_html_color()
 
 @app.route('/pixels', methods=['POST'])
 def set_pixels():
@@ -75,8 +52,7 @@ def set_pixels():
    for name, pixel in pixels.items():
       key = 'color_%s' % name
       if key in request.form.keys():
-         r, g, b = hex_triplet_to_rgb(request.form[key])
-         pixels[name].set(r, g, b)
+         pixels[name].set_html_color(request.form[key])
          controllers.update(pixels[name].get_controllers())
    for controller in controllers:
       controller.sync()
