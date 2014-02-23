@@ -1,10 +1,11 @@
 import webpixels
+import webpixels.controller
 import time
 
-controller = webpixels.ColorKinetics(host="192.168.1.44")
+controller = webpixels.controller.ColorKinetics(host="10.11.1.116")
 
 pixels = []
-for i in xrange(8):
+for i in xrange(16):
    r, g, b = controller.channels[i*3:i*3+3]
    pixels.append(webpixels.RgbPixel(r, g, b))
 

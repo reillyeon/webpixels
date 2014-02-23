@@ -1,18 +1,19 @@
 {
    "controllers": [
       {
+         "name": "ck",
          "type": "ColorKinetics",
-         "host": "10.11.1.116",
-         "pixels": [
-            [ 0, 1, 2 ],
-            [ 3, 4, 5 ],
-            [ 6, 7, 8 ],
-            [ 9, 10, 11 ],
-            [ 12, 13, 14 ],
-            [ 15, 16, 17 ],
-            [ 18, 19, 20 ],
-            [ 21, 22, 23 ]
-         ]
+         "host": "10.11.1.116"
       }
+   ],
+   "rgbpixels": [
+      { "name": "pixel0", "channels": [ "ck:0", "ck:1", "ck:2" ] },
+      { "name": "pixel1", "channels": [ "ck:3", "ck:4", "ck:5" ] },
+      { "name": "pixel2", "channels": [ "ck:6", "ck:7", "ck:8" ] },
+      { "name": "pixel3", "channels": [ "ck:9", "ck:10", "ck:11" ] },
+      { "name": "pixel4", "channels": [ "ck:12", "ck:13", "ck:14" ] },
+      { "name": "pixel5", "channels": [ "ck:15", "ck:16", "ck:17" ] },
+      { "name": "pixel6", "channels": [ "ck:18", "ck:19", "ck:20" ] },
+      { "name": "pixel7", "channels": [ "ck:21", "ck:22", "ck:23" ] }
    ]
 }

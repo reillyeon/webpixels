@@ -4,7 +4,7 @@ import struct
 
 class ColorKineticsChannel(Channel):
    def __init__(self, controller, dmx_channel, value=0):
-      super(Channel, self).__init__(controller, value)
+      super(ColorKineticsChannel, self).__init__(controller, value)
       self.dmx_channel = dmx_channel
 
 class ColorKinetics(Controller):
@@ -12,7 +12,7 @@ class ColorKinetics(Controller):
       self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       self.sock.connect((host, port))
 
-      self.channels = [Channel(self, i) for i in range(512)]
+      self.channels = [ColorKineticsChannel(self, i) for i in range(512)]
 
    def sync(self):
       header = struct.pack(">IHHIBBHIB",
