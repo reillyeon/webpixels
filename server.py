@@ -1,16 +1,23 @@
 from flask import Flask, redirect, render_template, request, url_for
+import json
+import re
 from webpixels import RgbPixel
 from webpixels.controller import ColorKinetics
-import re
 
 app = Flask(__name__)
 
-controller = ColorKinetics(host="192.168.1.44")
-
 pixels = []
-for i in range(8):
-   r, g, b = controller.channels[i*3:i*3+3]
-   pixels.append(RgbPixel(r, g, b))
+
+def load_config(config_file):
+   with open(config_file) as f:
+      config = json.loads(f.read())
+   for controllerConfig in config['controllers']:
+      controllerType = controllerConfig['type']
+      if controllerType == 'ColorKinetics':
+         controller = ColorKinetics(host=controllerConfig['host'])
+      for pixel in controllerConfig['pixels']:
+         channels = [controller.channels[channel] for channel in pixel]
+         pixels.append(RgbPixel(*channels))
 
 hex_triplet_pattern = re.compile(r'^#([0-9a-fA-F]{6})$')
 def hex_triplet_to_rgb(hex):
@@ -38,9 +45,12 @@ def index():
 @app.route('/pixel/all', methods=['POST'])
 def set_all_pixels():
    r, g, b = hex_triplet_to_rgb(request.form['color'])
+   controllers = set()
    for pixel in pixels:
       pixel.set(r, g, b)
-   controller.sync()
+      controllers.update(pixel.get_controllers())
+   for controller in controllers:
+      controller.sync()
    return redirect(url_for('index'))
 
 @app.route('/pixel/<int:pixel>', methods=['GET', 'POST'])
@@ -48,7 +58,7 @@ def pixel(pixel):
    if request.method == 'POST':
       r, g, b = hex_triplet_to_rgb(request.form['color'])
       pixels[pixel].set(r, g, b)
-      controller.sync()
+      pixels[pixel].sync()
       return redirect(url_for('index'))
    else:
       rgb = pixels[pixel].get()
@@ -56,15 +66,25 @@ def pixel(pixel):
 
 @app.route('/pixels', methods=['POST'])
 def set_pixels():
+   controllers = set()
    for i in range(len(pixels)):
       key = 'color_%d' % i
       if key in request.form.keys():
          r, g, b = hex_triplet_to_rgb(request.form[key])
          pixels[i].set(r, g, b)
-   controller.sync()
+         controllers.update(pixels[i].get_controllers())
+   for controller in controllers:
+      controller.sync()
    return redirect(url_for('index'))
 
 if __name__ == '__main__':
-   controller.sync()
+   import sys
+
+   if len(sys.argv) != 2:
+      print "Usage: python server.py config.json"
+
+   configFile = sys.argv[1]
+   load_config(configFile)
+
    app.debug = True
    app.run(host='0.0.0.0', port=80)
