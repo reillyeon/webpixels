@@ -16,26 +16,35 @@ def load_config(config_file):
       controllerType = controllerConfig['type']
       if controllerType == 'ColorKinetics':
          controller = ColorKinetics(host=controllerConfig['host'])
-      for channel in controller.channels:
-         name = '%s:%d' % (controllerConfig['name'], channel.dmx_channel)
-         channels[name] = channel
+         for channel in controller.channels:
+            name = '%s:%d' % (controllerConfig['name'], channel.dmx_channel)
+            channels[name] = channel
 
    for pixelConfig in config['rgbpixels']:
       chan_set = [channels[name] for name in pixelConfig['channels']]
       pixels[pixelConfig['name']] = RgbPixel(*chan_set)
 
-   all_pixel = AveragePixel(list(pixels.values()))
-   pixels['all'] = all_pixel
+   for fixtureConfig in config['fixtures']:
+      pixel_set = [pixels[name] for name in fixtureConfig['pixels']]
+      pixels[fixtureConfig['name']] = AveragePixel(pixel_set)
+
+   all_pixels = [pixel for pixel in pixels.values()
+                 if not isinstance(pixel, AveragePixel)]
+   pixels['all'] = AveragePixel(all_pixels)
 
 @app.route('/')
 def index():
    pixel_list = [(name, pixel.get_html_color())
                  for name, pixel in pixels.items()
-                 if name != 'all']
+                 if not isinstance(pixel, AveragePixel)]
    pixel_list.sort(key=lambda pixel: pixel[0])
+   fixture_list = [(name, pixel.get_html_color())
+                   for name, pixel in pixels.items()
+                   if isinstance(pixel, AveragePixel)]
+   fixture_list.sort(key=lambda pixel: pixel[0])
    return render_template('index.html',
                           pixels=pixel_list,
-                          average=pixels['all'].get_html_color())
+                          fixtures=fixture_list)
 
 @app.route('/pixel/<pixel>', methods=['GET', 'POST'])
 def pixel(pixel):

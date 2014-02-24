@@ -7,13 +7,37 @@
       }
    ],
    "rgbpixels": [
-      { "name": "pixel0", "channels": [ "ck:0", "ck:1", "ck:2" ] },
-      { "name": "pixel1", "channels": [ "ck:3", "ck:4", "ck:5" ] },
-      { "name": "pixel2", "channels": [ "ck:6", "ck:7", "ck:8" ] },
-      { "name": "pixel3", "channels": [ "ck:9", "ck:10", "ck:11" ] },
-      { "name": "pixel4", "channels": [ "ck:12", "ck:13", "ck:14" ] },
-      { "name": "pixel5", "channels": [ "ck:15", "ck:16", "ck:17" ] },
-      { "name": "pixel6", "channels": [ "ck:18", "ck:19", "ck:20" ] },
-      { "name": "pixel7", "channels": [ "ck:21", "ck:22", "ck:23" ] }
+      { "name": "strip0:0", "channels": [ "ck:0", "ck:1", "ck:2" ] },
+      { "name": "strip0:1", "channels": [ "ck:3", "ck:4", "ck:5" ] },
+      { "name": "strip0:2", "channels": [ "ck:6", "ck:7", "ck:8" ] },
+      { "name": "strip0:3", "channels": [ "ck:9", "ck:10", "ck:11" ] },
+      { "name": "strip0:4", "channels": [ "ck:12", "ck:13", "ck:14" ] },
+      { "name": "strip0:5", "channels": [ "ck:15", "ck:16", "ck:17" ] },
+      { "name": "strip0:6", "channels": [ "ck:18", "ck:19", "ck:20" ] },
+      { "name": "strip0:7", "channels": [ "ck:21", "ck:22", "ck:23" ] },
+      { "name": "strip1:0", "channels": [ "ck:24", "ck:25", "ck:26" ] },
+      { "name": "strip1:1", "channels": [ "ck:27", "ck:28", "ck:29" ] },
+      { "name": "strip1:2", "channels": [ "ck:30", "ck:31", "ck:32" ] },
+      { "name": "strip1:3", "channels": [ "ck:33", "ck:34", "ck:35" ] },
+      { "name": "strip1:4", "channels": [ "ck:36", "ck:37", "ck:38" ] },
+      { "name": "strip1:5", "channels": [ "ck:39", "ck:40", "ck:41" ] },
+      { "name": "strip1:7", "channels": [ "ck:42", "ck:43", "ck:44" ] },
+      { "name": "blast0", "channels": [ "ck:45", "ck:46", "ck:47" ] }
+   ],
+   "fixtures": [
+      {
+         "name": "strip0",
+         "pixels": [
+            "strip0:0", "strip0:1", "strip0:2", "strip0:3",
+            "strip0:4", "strip0:5", "strip0:6", "strip0:7"
+         ]
+      },
+      {
+         "name": "strip1",
+         "pixels": [
+            "strip1:0", "strip1:1", "strip1:2", "strip1:3",
+            "strip1:4", "strip1:5", "strip1:7"
+         ]
+      }
    ]
 }
