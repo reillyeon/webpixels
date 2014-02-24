@@ -4,11 +4,13 @@ import struct
 
 class ColorKineticsChannel(Channel):
    def __init__(self, controller, dmx_channel, value=0):
-      super(ColorKineticsChannel, self).__init__(controller, value)
-      self.dmx_channel = dmx_channel
+      name = '%s:%d' % (controller.get_name(), dmx_channel)
+      super(ColorKineticsChannel, self).__init__(name, controller, value)
 
 class ColorKinetics(Controller):
-   def __init__(self, host, port=6038):
+   def __init__(self, name, host, port=6038):
+      super(ColorKinetics, self).__init__(name)
+      self.host = host
       self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
       self.sock.connect((host, port))
 

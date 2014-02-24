@@ -2,7 +2,8 @@ from abc import ABCMeta, abstractmethod
 import re
 
 class Channel(object):
-   def __init__(self, controller, value=0):
+   def __init__(self, name, controller, value=0):
+      self.name = name
       self.controller = controller
       self.value = value
 
@@ -27,8 +28,11 @@ class Channel(object):
    def get_controller(self):
       return self.controller
 
+   def get_name(self):
+      return self.name
+
    def __str__(self):
-      return "<Channel %d>" % self.value
+      return "<Channel %s>" % self.name
 
 hex_triplet_pattern = re.compile(r'^#([0-9a-fA-F]{6})$')
 def parse_html_color(color):
@@ -41,6 +45,9 @@ def parse_html_color(color):
 
 class Pixel(object):
    __metaclass__ = ABCMeta
+
+   def __init__(self, name):
+      self.name = name
 
    @abstractmethod
    def set(self, red, green, blue):
@@ -72,16 +79,19 @@ class Pixel(object):
    def get_controllers(self):
       pass
 
+   def get_name(self):
+      return self.name
+
    def sync(self):
       for controller in self.get_controllers():
          controller.sync()
 
    def __str__(self):
-      r, g, b = self.get()
-      return "<Pixel %d, %d, %d>" % (r, g, b)
+      return "<Pixel %s>" % self.name
 
 class RgbPixel(Pixel):
-   def __init__(self, red_chan, green_chan, blue_chan, value=(0, 0, 0)):
+   def __init__(self, name, red_chan, green_chan, blue_chan):
+      super(RgbPixel, self).__init__(name)
       self.controllers = set()
       self.red = red_chan
       self.controllers.add(red_chan.get_controller())
@@ -112,7 +122,8 @@ class RgbPixel(Pixel):
       return self.controllers
 
 class PixelSet(Pixel):
-   def __init__(self, pixels):
+   def __init__(self, name, pixels):
+      super(PixelSet, self).__init__(name)
       self.pixels = pixels
       self.controllers = set()
       for pixel in pixels:
@@ -138,9 +149,18 @@ class PixelSet(Pixel):
    def get_controllers(self):
       return self.controllers
 
+   def get_pixels(self):
+      return self.pixels
+
 class Controller(object):
    __metaclass__ = ABCMeta
+
+   def __init__(self, name):
+      self.name = name
 
    @abstractmethod
    def sync(self):
       pass
+
+   def get_name(self):
+      return self.name

@@ -1,47 +1,420 @@
 {
-   "controllers": [
-      {
-         "name": "ck",
-         "type": "ColorKinetics",
-         "host": "10.11.1.116"
-      }
-   ],
-   "rgbpixels": [
-      { "name": "strip0:0", "channels": [ "ck:0", "ck:1", "ck:2" ] },
-      { "name": "strip0:1", "channels": [ "ck:3", "ck:4", "ck:5" ] },
-      { "name": "strip0:2", "channels": [ "ck:6", "ck:7", "ck:8" ] },
-      { "name": "strip0:3", "channels": [ "ck:9", "ck:10", "ck:11" ] },
-      { "name": "strip0:4", "channels": [ "ck:12", "ck:13", "ck:14" ] },
-      { "name": "strip0:5", "channels": [ "ck:15", "ck:16", "ck:17" ] },
-      { "name": "strip0:6", "channels": [ "ck:18", "ck:19", "ck:20" ] },
-      { "name": "strip0:7", "channels": [ "ck:21", "ck:22", "ck:23" ] },
-      { "name": "strip1:0", "channels": [ "ck:24", "ck:25", "ck:26" ] },
-      { "name": "strip1:1", "channels": [ "ck:27", "ck:28", "ck:29" ] },
-      { "name": "strip1:2", "channels": [ "ck:30", "ck:31", "ck:32" ] },
-      { "name": "strip1:3", "channels": [ "ck:33", "ck:34", "ck:35" ] },
-      { "name": "strip1:4", "channels": [ "ck:36", "ck:37", "ck:38" ] },
-      { "name": "strip1:5", "channels": [ "ck:39", "ck:40", "ck:41" ] },
-      { "name": "strip1:7", "channels": [ "ck:42", "ck:43", "ck:44" ] },
-      { "name": "blast0:0", "channels": [ "ck:45", "ck:46", "ck:47" ] }
-   ],
-   "fixtures": [
-      {
-         "name": "strip0",
-         "pixels": [
-            "strip0:0", "strip0:1", "strip0:2", "strip0:3",
-            "strip0:4", "strip0:5", "strip0:6", "strip0:7"
-         ]
-      },
-      {
-         "name": "strip1",
-         "pixels": [
-            "strip1:0", "strip1:1", "strip1:2", "strip1:3",
-            "strip1:4", "strip1:5", "strip1:7"
-         ]
-      },
-      {
-         "name": "blast0",
-         "pixels": [ "blast0:0" ]
-      }
-   ]
+  "controllers": [
+    {
+      "host": "10.11.1.116",
+      "name": "ck",
+      "type": "ColorKinetics"
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "strip0",
+      "pixels": [
+        "strip0:0",
+        "strip0:1",
+        "strip0:2",
+        "strip0:3",
+        "strip0:4",
+        "strip0:5",
+        "strip0:6",
+        "strip0:7"
+      ]
+    },
+    {
+      "name": "blast0",
+      "pixels": [
+        "blast0:0"
+      ]
+    },
+    {
+      "name": "strip1",
+      "pixels": [
+        "strip1:0",
+        "strip1:1",
+        "strip1:2",
+        "strip1:3",
+        "strip1:4",
+        "strip1:5",
+        "strip1:7"
+      ]
+    }
+  ],
+  "pixels": [
+    {
+      "channels": [
+        "ck:12",
+        "ck:13",
+        "ck:14"
+      ],
+      "name": "strip0:4"
+    },
+    {
+      "channels": [
+        "ck:21",
+        "ck:22",
+        "ck:23"
+      ],
+      "name": "strip0:7"
+    },
+    {
+      "channels": [
+        "ck:15",
+        "ck:16",
+        "ck:17"
+      ],
+      "name": "strip0:5"
+    },
+    {
+      "channels": [
+        "ck:6",
+        "ck:7",
+        "ck:8"
+      ],
+      "name": "strip0:2"
+    },
+    {
+      "channels": [
+        "ck:18",
+        "ck:19",
+        "ck:20"
+      ],
+      "name": "strip0:6"
+    },
+    {
+      "channels": [
+        "ck:27",
+        "ck:28",
+        "ck:29"
+      ],
+      "name": "strip1:1"
+    },
+    {
+      "channels": [
+        "ck:24",
+        "ck:25",
+        "ck:26"
+      ],
+      "name": "strip1:0"
+    },
+    {
+      "channels": [
+        "ck:33",
+        "ck:34",
+        "ck:35"
+      ],
+      "name": "strip1:3"
+    },
+    {
+      "channels": [
+        "ck:30",
+        "ck:31",
+        "ck:32"
+      ],
+      "name": "strip1:2"
+    },
+    {
+      "channels": [
+        "ck:39",
+        "ck:40",
+        "ck:41"
+      ],
+      "name": "strip1:5"
+    },
+    {
+      "channels": [
+        "ck:36",
+        "ck:37",
+        "ck:38"
+      ],
+      "name": "strip1:4"
+    },
+    {
+      "channels": [
+        "ck:42",
+        "ck:43",
+        "ck:44"
+      ],
+      "name": "strip1:7"
+    },
+    {
+      "channels": [
+        "ck:9",
+        "ck:10",
+        "ck:11"
+      ],
+      "name": "strip0:3"
+    },
+    {
+      "channels": [
+        "ck:0",
+        "ck:1",
+        "ck:2"
+      ],
+      "name": "strip0:0"
+    },
+    {
+      "channels": [
+        "ck:45",
+        "ck:46",
+        "ck:47"
+      ],
+      "name": "blast0:0"
+    },
+    {
+      "channels": [
+        "ck:3",
+        "ck:4",
+        "ck:5"
+      ],
+      "name": "strip0:1"
+    }
+  ],
+  "presets": {
+    "Blue": {
+      "blast0:0": [
+        4,
+        51,
+        255
+      ],
+      "strip0:0": [
+        4,
+        51,
+        255
+      ],
+      "strip0:1": [
+        4,
+        51,
+        255
+      ],
+      "strip0:2": [
+        4,
+        51,
+        255
+      ],
+      "strip0:3": [
+        4,
+        51,
+        255
+      ],
+      "strip0:4": [
+        4,
+        51,
+        255
+      ],
+      "strip0:5": [
+        4,
+        51,
+        255
+      ],
+      "strip0:6": [
+        4,
+        51,
+        255
+      ],
+      "strip0:7": [
+        4,
+        51,
+        255
+      ],
+      "strip1:0": [
+        4,
+        51,
+        255
+      ],
+      "strip1:1": [
+        4,
+        51,
+        255
+      ],
+      "strip1:2": [
+        4,
+        51,
+        255
+      ],
+      "strip1:3": [
+        4,
+        51,
+        255
+      ],
+      "strip1:4": [
+        4,
+        51,
+        255
+      ],
+      "strip1:5": [
+        4,
+        51,
+        255
+      ],
+      "strip1:7": [
+        4,
+        51,
+        255
+      ]
+    },
+    "RGB": {
+      "blast0:0": [
+        4,
+        51,
+        255
+      ],
+      "strip0:0": [
+        255,
+        38,
+        0
+      ],
+      "strip0:1": [
+        255,
+        38,
+        0
+      ],
+      "strip0:2": [
+        255,
+        38,
+        0
+      ],
+      "strip0:3": [
+        255,
+        38,
+        0
+      ],
+      "strip0:4": [
+        255,
+        38,
+        0
+      ],
+      "strip0:5": [
+        255,
+        38,
+        0
+      ],
+      "strip0:6": [
+        255,
+        38,
+        0
+      ],
+      "strip0:7": [
+        255,
+        38,
+        0
+      ],
+      "strip1:0": [
+        0,
+        249,
+        0
+      ],
+      "strip1:1": [
+        0,
+        249,
+        0
+      ],
+      "strip1:2": [
+        0,
+        249,
+        0
+      ],
+      "strip1:3": [
+        0,
+        249,
+        0
+      ],
+      "strip1:4": [
+        0,
+        249,
+        0
+      ],
+      "strip1:5": [
+        0,
+        249,
+        0
+      ],
+      "strip1:7": [
+        0,
+        249,
+        0
+      ]
+    },
+    "Red": {
+      "blast0:0": [
+        255,
+        38,
+        0
+      ],
+      "strip0:0": [
+        255,
+        38,
+        0
+      ],
+      "strip0:1": [
+        255,
+        38,
+        0
+      ],
+      "strip0:2": [
+        255,
+        38,
+        0
+      ],
+      "strip0:3": [
+        255,
+        38,
+        0
+      ],
+      "strip0:4": [
+        255,
+        38,
+        0
+      ],
+      "strip0:5": [
+        255,
+        38,
+        0
+      ],
+      "strip0:6": [
+        255,
+        38,
+        0
+      ],
+      "strip0:7": [
+        255,
+        38,
+        0
+      ],
+      "strip1:0": [
+        255,
+        38,
+        0
+      ],
+      "strip1:1": [
+        255,
+        38,
+        0
+      ],
+      "strip1:2": [
+        255,
+        38,
+        0
+      ],
+      "strip1:3": [
+        255,
+        38,
+        0
+      ],
+      "strip1:4": [
+        255,
+        38,
+        0
+      ],
+      "strip1:5": [
+        255,
+        38,
+        0
+      ],
+      "strip1:7": [
+        255,
+        38,
+        0
+      ]
+    }
+  }
 }

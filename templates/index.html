@@ -22,5 +22,19 @@
   {% endfor %}
   <input type="submit" />
 </form>
+<form method="POST">
+  Preset:
+  <select name="preset">
+    {% for preset in presets %}
+      <option value="{{ preset }}">{{ preset }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" formaction="preset/apply" value="Apply" />
+  <input type="submit" formaction="preset/delete" value="Delete" />
+</form>
+<form method="POST" action="preset/save">
+  <input type="text" name="preset" />
+  <input type="submit" value="Save Preset" />
+</form>
 </body>
 </html>
