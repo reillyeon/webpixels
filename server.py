@@ -34,15 +34,18 @@ def load_config(config_file):
 
 @app.route('/')
 def index():
+   all_pixels = pixels['all'].get_html_color()
    pixel_list = [(name, pixel.get_html_color())
                  for name, pixel in pixels.items()
                  if not isinstance(pixel, AveragePixel)]
    pixel_list.sort(key=lambda pixel: pixel[0])
    fixture_list = [(name, pixel.get_html_color())
                    for name, pixel in pixels.items()
-                   if isinstance(pixel, AveragePixel)]
+                   if isinstance(pixel, AveragePixel) and
+                      name != 'all']
    fixture_list.sort(key=lambda pixel: pixel[0])
    return render_template('index.html',
+                          all=all_pixels,
                           pixels=pixel_list,
                           fixtures=fixture_list)
 

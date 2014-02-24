@@ -22,7 +22,7 @@
       { "name": "strip1:4", "channels": [ "ck:36", "ck:37", "ck:38" ] },
       { "name": "strip1:5", "channels": [ "ck:39", "ck:40", "ck:41" ] },
       { "name": "strip1:7", "channels": [ "ck:42", "ck:43", "ck:44" ] },
-      { "name": "blast0", "channels": [ "ck:45", "ck:46", "ck:47" ] }
+      { "name": "blast0:0", "channels": [ "ck:45", "ck:46", "ck:47" ] }
    ],
    "fixtures": [
       {
@@ -38,6 +38,10 @@
             "strip1:0", "strip1:1", "strip1:2", "strip1:3",
             "strip1:4", "strip1:5", "strip1:7"
          ]
+      },
+      {
+         "name": "blast0",
+         "pixels": [ "blast0:0" ]
       }
    ]
 }

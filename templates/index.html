@@ -3,13 +3,18 @@
 <title>Web Pixels</title>
 </head>
 <body>
-{% for fixture, color in fixtures %}
-<form method="POST" action="pixel/{{ fixture }}">
-  {{ fixture }}:
-  <input type="color" name="color" value="{{ color }}" />
+<form method="POST" action="pixel/all">
+  All:
+  <input type="color" name="color" value="{{ all }}" />
   <input type="submit" />
 </form>
-{% endfor %}
+<form method="POST" action="pixels">
+  {% for fixture, color in fixtures %}
+  {{ fixture }}:
+  <input type="color" name="color_{{ fixture }}" value="{{ color }}" />
+  {% endfor %}
+  <input type="submit" />
+</form>
 <form method="POST" action="pixels">
   {% for pixel, color in pixels %}
   {{ pixel }}:
