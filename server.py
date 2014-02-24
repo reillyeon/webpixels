@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 import json
-from webpixels import AveragePixel, RgbPixel
+import time
+from webpixels import PixelSet, RgbPixel
 from webpixels.controller import ColorKinetics
 
 app = Flask(__name__)
@@ -26,22 +27,22 @@ def load_config(config_file):
 
    for fixtureConfig in config['fixtures']:
       pixel_set = [pixels[name] for name in fixtureConfig['pixels']]
-      pixels[fixtureConfig['name']] = AveragePixel(pixel_set)
+      pixels[fixtureConfig['name']] = PixelSet(pixel_set)
 
    all_pixels = [pixel for pixel in pixels.values()
-                 if not isinstance(pixel, AveragePixel)]
-   pixels['all'] = AveragePixel(all_pixels)
+                 if not isinstance(pixel, PixelSet)]
+   pixels['all'] = PixelSet(all_pixels)
 
 @app.route('/')
 def index():
    all_pixels = pixels['all'].get_html_color()
    pixel_list = [(name, pixel.get_html_color())
                  for name, pixel in pixels.items()
-                 if not isinstance(pixel, AveragePixel)]
+                 if not isinstance(pixel, PixelSet)]
    pixel_list.sort(key=lambda pixel: pixel[0])
    fixture_list = [(name, pixel.get_html_color())
                    for name, pixel in pixels.items()
-                   if isinstance(pixel, AveragePixel) and
+                   if isinstance(pixel, PixelSet) and
                       name != 'all']
    fixture_list.sort(key=lambda pixel: pixel[0])
    return render_template('index.html',
@@ -51,23 +52,36 @@ def index():
 
 @app.route('/pixel/<pixel>', methods=['GET', 'POST'])
 def pixel(pixel):
+   pixel = pixels[pixel]
    if request.method == 'POST':
-      pixels[pixel].set_html_color(request.form['color'])
-      pixels[pixel].sync()
+      pixel.fade_html_color(request.form['color'])
+      for i in range(40):
+         time.sleep(0.025)
+         pixel.fade_progress(i / 39)
+         pixel.sync()
       return redirect(url_for('index'))
    else:
-      return pixels[pixel].get_html_color()
+      return pixel.get_html_color()
 
 @app.route('/pixels', methods=['POST'])
 def set_pixels():
+   pixel_set = []
    controllers = set()
    for name, pixel in pixels.items():
       key = 'color_%s' % name
       if key in request.form.keys():
-         pixels[name].set_html_color(request.form[key])
-         controllers.update(pixels[name].get_controllers())
-   for controller in controllers:
-      controller.sync()
+         pixel = pixels[name]
+         pixel.fade_html_color(request.form[key])
+         pixel_set.append(pixel)
+         controllers.update(pixel.get_controllers())
+
+   for i in range(40):
+      time.sleep(0.025)
+      for pixel in pixel_set:
+         pixel.fade_progress(i / 39)
+      for controller in controllers:
+         controller.sync()
+
    return redirect(url_for('index'))
 
 if __name__ == '__main__':
