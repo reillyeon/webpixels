@@ -26,7 +26,7 @@
   Preset:
   <select name="preset">
     {% for preset in presets %}
-      <option value="{{ preset }}">{{ preset }}</option>
+      <option value="{{ preset }}"{% if preset == last_preset %} selected{% endif %}>{{ preset }}</option>
     {% endfor %}
   </select>
   <input type="submit" formaction="preset/apply" value="Apply" />

@@ -11,6 +11,7 @@ config_file = None
 channels = {}
 pixels = {}
 presets = {}
+last_preset = None
 
 def load_config(config_file):
    with open(config_file) as f:
@@ -98,13 +99,15 @@ def index():
                       name != 'all']
    fixture_list.sort(key=lambda pixel: pixel[0])
 
-   preset_list = presets.keys()
+   preset_list = list(presets.keys())
+   preset_list.sort()
 
    return render_template('index.html',
                           all=all_pixels,
                           pixels=pixel_list,
                           fixtures=fixture_list,
-                          presets=preset_list)
+                          presets=preset_list,
+                          last_preset=last_preset)
 
 @app.route('/pixel/<pixel>', methods=['GET', 'POST'])
 def pixel(pixel):
@@ -153,6 +156,9 @@ def save_preset():
    presets[request.form['preset']] = preset
    save_config(config_file)
 
+   global last_preset
+   last_preset = request.form['preset']
+
    return redirect(url_for('index'))
 
 @app.route('/preset/apply', methods=['POST'])
@@ -173,6 +179,9 @@ def apply_preset():
          pixel.fade_progress(i / 39)
       for controller in controller_set:
          controller.sync()
+
+   global last_preset
+   last_preset = request.form['preset']
 
    return redirect(url_for('index'))
 
