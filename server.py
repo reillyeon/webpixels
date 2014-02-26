@@ -84,7 +84,12 @@ def save_config(config_file):
    with open(config_file, 'w') as f:
       f.write(save_data)
 
-@app.route('/')
+def redirect_url():
+   return redirect(request.args.get('next') or \
+                   request.referrer or \
+                   url_for('index'))
+
+@app.route('/', methods=['GET'])
 def index():
    all_pixels = pixels['all'].get_html_color()
 
@@ -113,17 +118,36 @@ def index():
 def pixel(pixel):
    pixel = pixels[pixel]
    if request.method == 'POST':
-      pixel.fade_html_color(request.form['color'])
-      for i in range(40):
-         time.sleep(0.025)
-         pixel.fade_progress(i / 39)
-         pixel.sync()
-      return redirect(url_for('index'))
+      return pixel_post(pixel)
    else:
-      return pixel.get_html_color()
+      return pixel_get(pixel)
+
+def pixel_post(pixel):
+   pixel.fade_html_color(request.form['color'])
+   for i in range(40):
+      time.sleep(0.025)
+      pixel.fade_progress(i / 39)
+      pixel.sync()
+   return redirect_url()
+
+def pixel_get(pixel):
+   channels = None
+   subpixels = None
+
+   if isinstance(pixel, RgbPixel):
+      channels = [(c.get_name(), c.get()) for c in pixel.get_channels()]
+   elif isinstance(pixel, PixelSet):
+      subpixels = [(p.get_name(), p.get_html_color())
+                   for p in pixel.get_pixels()]
+
+   return render_template('pixel.html',
+                          pixel=pixel.get_name(),
+                          color=pixel.get_html_color(),
+                          channels=channels,
+                          subpixels=subpixels)
 
 @app.route('/pixels', methods=['POST'])
-def set_pixels():
+def pixels_post():
    pixel_set = []
    controllers = set()
    for name, pixel in pixels.items():
@@ -141,10 +165,42 @@ def set_pixels():
       for controller in controllers:
          controller.sync()
 
-   return redirect(url_for('index'))
+   return redirect_url()
+
+@app.route('/channel/<channel>', methods=['GET', 'POST'])
+def channel(channel):
+   channel = channels[channel]
+   if request.method == 'POST':
+      return channel_post(channel)
+   else:
+      return channel_get(channel)
+
+def channel_post(channel):
+   channel.set(int(request.form['value']))
+   channel.sync()
+
+   return redirect_url()
+
+def channel_get(channel):
+   return render_template('channel.html',
+                          channel=channel.get_name(),
+                          value=channel.get())
+
+@app.route('/channels', methods=['POST'])
+def channels_post():
+   controllers = set()
+   for name, channel in channels.items():
+      if name in request.form.keys():
+         channel.set(int(request.form[name]))
+         controllers.add(channel.get_controller())
+
+   for controller in controllers:
+      controller.sync()
+
+   return redirect_url()
 
 @app.route('/preset/save', methods=['POST'])
-def save_preset():
+def preset_save():
    preset = {}
 
    for name, pixel in pixels.items():
@@ -159,10 +215,10 @@ def save_preset():
    global last_preset
    last_preset = request.form['preset']
 
-   return redirect(url_for('index'))
+   return redirect_url()
 
 @app.route('/preset/apply', methods=['POST'])
-def apply_preset():
+def preset_apply():
    preset = presets[request.form['preset']]
    pixel_set = []
    controller_set = set()
@@ -183,14 +239,14 @@ def apply_preset():
    global last_preset
    last_preset = request.form['preset']
 
-   return redirect(url_for('index'))
+   return redirect_url()
 
 @app.route('/preset/delete', methods=['POST'])
-def delete_preset():
+def preset_delete():
    del presets[request.form['preset']]
    save_config(config_file)
 
-   return redirect(url_for('index'))
+   return redirect_url()
 
 if __name__ == '__main__':
    import sys

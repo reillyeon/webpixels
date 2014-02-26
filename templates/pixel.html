@@ -1,0 +1,33 @@
+<html>
+<head>
+  <title>Pixel: {{ pixel }}</title>
+</head>
+
+<body>
+<h1>{{ pixel }}</h1>
+<form action="/pixel/{{ pixel }}" method="POST">
+  <input type="color" name="color" value="{{ color }}" />
+  <input type="submit" value="Apply" />
+</form>
+{% if channels %}
+<h2>Channels</h2>
+<form action="/channels" method="POST">
+  {% for channel, value in channels %}
+  <input type="range" min="0" max="255" name="{{ channel }}" value="{{ value }}" />
+  <a href="/channel/{{ channel }}">{{ channel }}</a><br />
+  {% endfor %}
+  <p><input type="submit" value="Apply" /></p>
+</form>
+{% endif %}
+{% if subpixels %}
+<h2>Subpixels</h2>
+<form action="/pixels" method="POST">
+  {% for pixel, color in subpixels %}
+  <input type="color" name="color_{{ pixel }}" value="{{ color }}" /></li>
+  <a href="/pixel/{{ pixel }}">{{ pixel }}</a><br />
+  {% endfor %}
+  <p><input type="submit" value="Apply" /></p>
+</form>
+{% endif %}
+</body>
+</html>

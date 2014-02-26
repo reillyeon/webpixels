@@ -23,7 +23,7 @@ class Channel(object):
       return self.value
 
    def sync(self):
-      controller.sync()
+      self.controller.sync()
 
    def get_controller(self):
       return self.controller
@@ -120,6 +120,9 @@ class RgbPixel(Pixel):
 
    def get_controllers(self):
       return self.controllers
+
+   def get_channels(self):
+      return (self.red, self.green, self.blue)
 
 class PixelSet(Pixel):
    def __init__(self, name, pixels):

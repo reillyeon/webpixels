@@ -1,0 +1,13 @@
+<html>
+<head>
+  <title>Channel: {{ channel }}</title>
+</head>
+
+<body>
+<h1>{{ channel }}</h1>
+<form action="/channel/{{ channel }}" method="POST">
+  <input type="range" min="0" max="255" name="value" value="{{ value }}" />
+  <input type="submit" value="Apply" />
+</form>
+</body>
+</html>

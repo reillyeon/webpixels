@@ -10,14 +10,14 @@
 </form>
 <form method="POST" action="pixels">
   {% for fixture, color in fixtures %}
-  {{ fixture }}:
+  <a href="/pixel/{{ fixture }}">{{ fixture }}</a>:
   <input type="color" name="color_{{ fixture }}" value="{{ color }}" />
   {% endfor %}
   <input type="submit" value="Apply" />
 </form>
 <form method="POST" action="pixels">
   {% for pixel, color in pixels %}
-  {{ pixel }}:
+  <a href="/pixel/{{ pixel }}">{{ pixel }}</a>:
   <input type="color" name="color_{{ pixel }}" value="{{ color }}" />
   {% endfor %}
   <input type="submit" value="Apply" />
