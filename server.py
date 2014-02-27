@@ -17,22 +17,21 @@ def load_config(config_file):
    with open(config_file) as f:
       config = json.loads(f.read())
 
-   for controllerConfig in config['controllers']:
+   for name, controllerConfig in config['controllers'].items():
       controllerType = controllerConfig['type']
       if controllerType == 'ColorKinetics':
-         controller = ColorKinetics(controllerConfig['name'],
-                                    controllerConfig['host'])
+         controller = ColorKinetics(name, controllerConfig['host'])
       for channel in controller.channels:
          channels[channel.get_name()] = channel
 
-   for pixelConfig in config['pixels']:
-      chan_set = [channels[name] for name in pixelConfig['channels']]
-      pixel = RgbPixel(pixelConfig['name'], *chan_set)
+   for name, pixelConfig in config['pixels'].items():
+      chan_set = [channels[channel] for channel in pixelConfig['channels']]
+      pixel = RgbPixel(name, *chan_set)
       pixels[pixel.get_name()] = pixel
 
-   for fixtureConfig in config['fixtures']:
-      pixel_set = [pixels[name] for name in fixtureConfig['pixels']]
-      fixture = PixelSet(fixtureConfig['name'], pixel_set)
+   for name, fixtureConfig in config['fixtures'].items():
+      pixel_set = [pixels[pixel] for pixel in fixtureConfig['pixels']]
+      fixture = PixelSet(name, pixel_set)
       pixels[fixture.get_name()] = fixture
 
    all_pixels = [pixel for pixel in pixels.values()
@@ -44,35 +43,32 @@ def load_config(config_file):
 
 def save_config(config_file):
    controller_set = set()
-   saved_controllers = []
-   saved_pixels = []
-   saved_fixtures = []
+   saved_controllers = {}
+   saved_pixels = {}
+   saved_fixtures = {}
 
    for pixel in pixels.values():
       controller_set.update(pixel.get_controllers())
       if isinstance(pixel, RgbPixel):
-         saved_pixels.append({
-            'name': pixel.get_name(),
+         saved_pixels[pixel.get_name()] = {
             'channels': [
                pixel.red.get_name(),
                pixel.green.get_name(),
                pixel.blue.get_name()
             ]
-         })
+         }
       elif isinstance(pixel, PixelSet) and pixel.get_name() != 'all':
-         saved_fixtures.append({
-            'name': pixel.get_name(),
+         saved_fixtures[pixel.get_name()] = {
             'pixels': [subpixel.get_name() for subpixel in pixel.get_pixels()]
-         })
+         }
 
    for controller in controller_set:
       if isinstance(controller, ColorKinetics):
          controller_type = "ColorKinetics"
-      saved_controllers.append({
-         'name': controller.get_name(),
+      saved_controllers[controller.get_name()] = {
          'host': controller.host,
          'type': controller_type
-      })
+      }
 
    save_data = json.dumps({
       'controllers': saved_controllers,
