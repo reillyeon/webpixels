@@ -4,7 +4,7 @@ function updateColor(input) {
    console.log("Updating to " + value + ".\n");
 
    input.data('updating', true);
-   $.post("/pixel/" + input.attr('name'), { color: value, immediate: "false" })
+   $.post("/pixel/" + input.attr('id'), { color: value, immediate: "false" })
       .always(function () {
          input.data('updating', false);
 
