@@ -119,11 +119,17 @@ def pixel(pixel):
       return pixel_get(pixel)
 
 def pixel_post(pixel):
-   pixel.fade_html_color(request.form['color'])
-   for i in range(40):
-      time.sleep(0.025)
-      pixel.fade_progress(i / 39)
+   immediate = 'immediate' in request.form.keys() and \
+      request.form['immediate'] == 'true'
+   if immediate:
+      pixel.set_html_color(request.form['color'])
       pixel.sync()
+   else:
+      pixel.fade_html_color(request.form['color'])
+      for i in range(40):
+         time.sleep(0.025)
+         pixel.fade_progress(i / 39)
+         pixel.sync()
    return redirect_url()
 
 def pixel_get(pixel):

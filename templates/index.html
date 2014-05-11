@@ -1,24 +1,26 @@
 <html>
 <head>
 <title>Web Pixels</title>
+<script src="{{ url_for('static', filename='jquery-1.11.1.min.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
 <form method="POST" action="pixel/all">
   All:
-  <input type="color" name="color" value="{{ all }}" />
+  <input class="rgb" type="color" name="all" value="{{ all }}" />
   <input type="submit" value="Apply" />
 </form>
 <form method="POST" action="pixels">
   {% for fixture, color in fixtures %}
   <a href="/pixel/{{ fixture }}">{{ fixture }}</a>:
-  <input type="color" name="color_{{ fixture }}" value="{{ color }}" />
+  <input class="rgb" type="color" name="{{ fixture }}" value="{{ color }}" />
   {% endfor %}
   <input type="submit" value="Apply" />
 </form>
 <form method="POST" action="pixels">
   {% for pixel, color in pixels %}
   <a href="/pixel/{{ pixel }}">{{ pixel }}</a>:
-  <input type="color" name="color_{{ pixel }}" value="{{ color }}" />
+  <input class="rgb" type="color" name="{{ pixel }}" value="{{ color }}" />
   {% endfor %}
   <input type="submit" value="Apply" />
 </form>
