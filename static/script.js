@@ -30,12 +30,11 @@ $( document ).ready(function () {
 
    $(".preset-btn").click(function () {
       var preset = $( this );
-      var oldPreset = $(".preset-btn.active");
 
       $.post("/preset/apply", { preset: preset.attr('id') })
          .always(function () {
+            $(".preset-btn").removeClass("active");
             preset.addClass("active");
-            oldPreset.removeClass("active");
          });
    });
 
