@@ -27,4 +27,31 @@ $( document ).ready(function () {
 
       updateColor(input);
    });
+
+   $(".preset-btn").click(function () {
+      var preset = $( this );
+      var oldPreset = $(".preset-btn.active");
+
+      $.post("/preset/apply", { preset: preset.attr('id') })
+         .always(function () {
+            preset.addClass("active");
+            oldPreset.removeClass("active");
+         });
+   });
+
+   $(".preset-save-btn").click(function () {
+      var name = prompt("Preset name:");
+
+      if (name != null) {
+         $.post("/preset/save", { name: name });
+      }
+   });
+
+   $(".preset-remove-btn").click(function () {
+      var name = $( this ).parent().attr("id");
+
+      if (confirm("Are you sure you want to delete \"" + name + "\"?")) {
+         $.post("/preset/delete", { name: name });
+      }
+   });
 });

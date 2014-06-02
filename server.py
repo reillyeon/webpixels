@@ -201,6 +201,15 @@ def channels_post():
 
    return redirect_url()
 
+@app.route('/presets', methods=['GET'])
+def preset_list():
+   preset_list = list(presets.keys())
+   preset_list.sort()
+
+   return render_template('presets.html',
+                          presets=preset_list,
+                          last_preset=last_preset)
+
 @app.route('/preset/save', methods=['POST'])
 def preset_save():
    preset = {}
@@ -211,7 +220,7 @@ def preset_save():
 
       preset[name] = pixel.get()
 
-   presets[request.form['preset']] = preset
+   presets[request.form['name']] = preset
    save_config(config_file)
 
    global last_preset
@@ -245,7 +254,7 @@ def preset_apply():
 
 @app.route('/preset/delete', methods=['POST'])
 def preset_delete():
-   del presets[request.form['preset']]
+   del presets[request.form['name']]
    save_config(config_file)
 
    return redirect_url()
