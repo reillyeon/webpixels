@@ -133,20 +133,11 @@ def pixel_post(pixel):
    return redirect_url()
 
 def pixel_get(pixel):
-   channels = None
-   subpixels = None
-
-   if isinstance(pixel, RgbPixel):
-      channels = [(c.get_name(), c.get()) for c in pixel.get_channels()]
-   elif isinstance(pixel, PixelSet):
-      subpixels = [(p.get_name(), p.get_html_color())
-                   for p in pixel.get_pixels()]
+   r, g, b = pixel.get()
 
    return render_template('pixel.html',
                           pixel=pixel.get_name(),
-                          color=pixel.get_html_color(),
-                          channels=channels,
-                          subpixels=subpixels)
+                          r=r, g=g, b=b)
 
 @app.route('/pixels', methods=['POST'])
 def pixels_post():
