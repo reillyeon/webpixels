@@ -134,7 +134,8 @@ def pixel_post(pixel):
          time.sleep(0.025)
          pixel.fade_progress(i / 39)
          pixel.sync()
-   return redirect_url()
+
+   return ""
 
 def pixel_get(pixel):
    r, g, b = pixel.get()
@@ -221,11 +222,12 @@ def preset_save():
    global last_preset
    last_preset = request.form['preset']
 
-   return redirect_url()
+   return ""
 
 @app.route('/preset/apply', methods=['POST'])
 def preset_apply():
-   preset = presets[request.form['preset']]
+   name = request.form['preset']
+   preset = presets[name]
    pixel_set = []
    controller_set = set()
 
@@ -243,16 +245,16 @@ def preset_apply():
          controller.sync()
 
    global last_preset
-   last_preset = request.form['preset']
+   last_preset = name
 
-   return redirect_url()
+   return ""
 
 @app.route('/preset/delete', methods=['POST'])
 def preset_delete():
    del presets[request.form['name']]
    save_config(config_file)
 
-   return redirect_url()
+   return ""
 
 if __name__ == '__main__':
    import sys

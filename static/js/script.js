@@ -1,8 +1,12 @@
 var updating = false;
 
 function updatePixel() {
+   if (updating) {
+      return;
+   }
+
    var pixel = $("h1").attr("id");
-   var r = $("#r").val(), g = $("#g").val(), b = $("#b").val();
+   var r = $("#r").val() | 0, g = $("#g").val() | 0, b = $("#b").val() | 0;
 
    updating = true;
    $.post("/pixel/" + pixel, { r: r, g: g, b: b, immediate: "false" })
@@ -42,7 +46,6 @@ function updateRgbFromHsl() {
    }
 
    $r.val(r * 255); $g.val(g * 255); $b.val(b * 255);
-   console.log(h + ", " + s + ", " + l + " -> " + r + ", " + g + ", " + b);
 }
 
 function updateHslFromRgb() {
@@ -73,7 +76,7 @@ function updateHslFromRgb() {
 
 function updatePreviews() {
    var $r = $("#r"), $g = $("#g"), $b = $("#b"), $h = $("#h"), $s = $("#s"), $l = $("#l");
-   var r = $r.val(), g = $g.val(), b = $b.val(), h = $h.val(), s = $s.val(), l = $l.val();
+   var r = $r.val() | 0, g = $g.val() | 0, b = $b.val() | 0, h = $h.val(), s = $s.val(), l = $l.val();
 
    $("#preview").css("background", "rgb(" + r + ", " + g + ", " + b + ")");
    $r.css('background', "linear-gradient(to right, rgb(0, " + g + ", " + b + "), rgb(255, " + g + ", " + b + "))");
