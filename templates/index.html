@@ -3,60 +3,47 @@
 {% block body %}
 <div class="row">
 
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">All</h3>
       </div>
-      <div class="panel-body">
-        <input class="rgb" id="all" type="color" name="color" value="{{ all }}" />
+      <div class="list-group">
+         <a href="/pixel/all" class="list-group-item">
+            <div class="preview-box">
+               <div class="preview" style="background: {{ all }};"></div>
+            </div>
+         </a>
       </div>
     </div>
   </div>
 
-  <div class="col-sm-4">
+  {% for fixture, color, pixels in fixtures %}
+  <div class="col-sm-3">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Fixtures</h3>
+        <h3 class="panel-title">{{ fixture }}</h3>
       </div>
-      <div class="panel-body">
-        <form class="form-horizontal" method="POST" action="pixels">
-          {% for fixture, color in fixtures %}
-          <div class="form-group">
-             <div class="col-sm-4">{{ fixture }}</div>
-             <div class="col-sm-8">
-               <input class="rgb" id="{{ fixture }}" type="color" name="color_{{ fixture }}" value="{{ color }}" />
-             </div>
-          </div>
-          {% endfor %}
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Pixels</h3>
-      </div>
-      <div class="panel-body">
-        <form class="form-horizontal" method="POST" action="pixels">
-          {% for pixel, color in pixels %}
-          <div class="form-group">
-             <div class="col-sm-4">{{ pixel }}</div>
-             <div class="col-sm-8">
-               <input class="rgb" id="{{ pixel }}" type="color" name="color_{{ pixel }}" value="{{ color }}" />
-             </div>
-          </div>
-          {% endfor %}
-        </form>
+      <div class="list-group">
+         <a href="/pixel/{{ fixture }}" class="list-group-item">
+            <div class="preview-box">
+               <div class="preview" style="background: {{ color }};"></div>
+            </div>
+         </a>
+         {% for pixel, color in pixels %}
+         <a href="/pixel/{{ pixel }}" class="list-group-item">
+            {{ pixel }}
+            <div class="pull-right">
+               <div class="preview-sm" style="background: {{ color }}"></div>
+            </div>
+         </a>
+         {% endfor %}
       </div>
     </div>
   </div>
-
-  <div class="col-sm-4">
-    <button class="btn btn-default btn-lg preset-save-btn">Save Preset</button>
-  </div>
+  {% endfor %}
 
 </div>
+
+<button class="btn btn-default btn-lg preset-save-btn">Save Preset</button>
 {% endblock %}

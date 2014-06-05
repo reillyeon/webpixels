@@ -3,25 +3,30 @@ body {
   padding-bottom: 30px;
 }
 
-#preview-box {
+.preview-box {
    position: relative;
    width: 50%;
    margin-left: auto;
    margin-right: auto;
 }
 
-#preview-box:before {
+.preview-box:before {
    content: "";
    display: block;
    padding-top: 100%;
 }
 
-#preview {
+.preview {
    position:  absolute;
    top: 0;
    left: 0;
    bottom: 0;
    right: 0;
+}
+
+.preview-sm {
+   width: 20px;
+   height: 20px;
 }
 
 input[type=range] {

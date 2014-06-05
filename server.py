@@ -94,21 +94,21 @@ def index():
                  if not isinstance(pixel, PixelSet)]
    pixel_list.sort(key=lambda pixel: pixel[0])
 
-   fixture_list = [(name, pixel.get_html_color())
-                   for name, pixel in pixels.items()
-                   if isinstance(pixel, PixelSet) and
-                      name != 'all']
-   fixture_list.sort(key=lambda pixel: pixel[0])
+   fixture_list = []
+   for name, fixture in pixels.items():
+      if (not isinstance(fixture, PixelSet)) or name == "all":
+         continue
 
-   preset_list = list(presets.keys())
-   preset_list.sort()
+      subpixels = [(pixel.get_name(), pixel.get_html_color())
+                   for pixel in fixture.get_pixels()]
+      fixture_list.append((name, fixture.get_html_color(), subpixels))
+
+   fixture_list.sort(key=lambda fixture: fixture[0])
+
 
    return render_template('index.html',
-                          all=all_pixels,
-                          pixels=pixel_list,
-                          fixtures=fixture_list,
-                          presets=preset_list,
-                          last_preset=last_preset)
+                          all=pixels['all'].get_html_color(),
+                          fixtures=fixture_list)
 
 @app.route('/pixel/<pixel>', methods=['GET', 'POST'])
 def pixel(pixel):
