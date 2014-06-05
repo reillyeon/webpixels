@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% set active_page = "pixel" %}
 {% block body %}
-<div class="row">
+<div class="row pixel" id="{{ pixel }}">
    <div class="col-sm-4">
       <div class="panel panel-default">
          <div class="panel-heading">
@@ -37,7 +37,7 @@
    <div class="col-sm-4">
       <div class="panel panel-default">
          <div class="panel-heading">
-            <h3 class="panel-title">HSV</h3>
+            <h3 class="panel-title">HSL</h3>
          </div>
          <div class="panel-body">
             <form role="form">
@@ -48,7 +48,7 @@
                    <input type="range" min="0" max="100" value="0" id="s" />
                </div>
                <div class="form-group">
-                   <input type="range" min="0" max="100" value="0" id="v" />
+                   <input type="range" min="0" max="100" value="0" id="l" />
                </div>
             </form>
          </div>

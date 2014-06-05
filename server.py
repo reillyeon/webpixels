@@ -121,11 +121,15 @@ def pixel(pixel):
 def pixel_post(pixel):
    immediate = 'immediate' in request.form.keys() and \
       request.form['immediate'] == 'true'
+   r = int(request.form['r'])
+   g = int(request.form['g'])
+   b = int(request.form['b'])
+
    if immediate:
-      pixel.set_html_color(request.form['color'])
+      pixel.set(r, g, b)
       pixel.sync()
    else:
-      pixel.fade_html_color(request.form['color'])
+      pixel.fade(r, g, b)
       for i in range(40):
          time.sleep(0.025)
          pixel.fade_progress(i / 39)
