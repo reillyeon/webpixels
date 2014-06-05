@@ -1,7 +1,7 @@
 var updating = false;
 
 function updatePixel() {
-   var pixel = $(".pixel").attr("id");
+   var pixel = $("h1").attr("id");
    var r = $("#r").val(), g = $("#g").val(), b = $("#b").val();
 
    updating = true;
