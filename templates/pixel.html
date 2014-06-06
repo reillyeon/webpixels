@@ -9,7 +9,7 @@
 </div>
 
 <div class="row">
-   <div class="col-md-4">
+   <div class="col-sm-6 col-md-4">
       <div class="panel panel-default">
          <div class="panel-heading">
             <h3 class="panel-title">Preview</h3>
@@ -21,43 +21,48 @@
          </div>
       </div>
    </div>
-   <div class="col-md-4">
-      <div class="panel panel-default">
-         <div class="panel-heading">
-            <h3 class="panel-title">RGB</h3>
+
+   <div class="col-sm-6 col-md-8">
+      <div class="row">
+         <div class="col-md-6">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <h3 class="panel-title">RGB</h3>
+               </div>
+               <div class="panel-body">
+                  <form role="form">
+                     <div class="form-group">
+                         <input type="range" min="0" max="255" value="{{ r }}" id="r" />
+                     </div>
+                     <div class="form-group">
+                         <input type="range" min="0" max="255" value="{{ g }}" id="g" />
+                     </div>
+                     <div class="form-group">
+                         <input type="range" min="0" max="255" value="{{ b }}" id="b" />
+                     </div>
+                  </form>
+               </div>
+            </div>
          </div>
-         <div class="panel-body">
-            <form role="form">
-               <div class="form-group">
-                   <input type="range" min="0" max="255" value="{{ r }}" id="r" />
+         <div class="col-md-6">
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <h3 class="panel-title">HSL</h3>
                </div>
-               <div class="form-group">
-                   <input type="range" min="0" max="255" value="{{ g }}" id="g" />
+               <div class="panel-body">
+                  <form role="form">
+                     <div class="form-group">
+                         <input type="range" min="0" max="360" value="0" id="h" />
+                     </div>
+                     <div class="form-group">
+                         <input type="range" min="0" max="100" value="0" id="s" />
+                     </div>
+                     <div class="form-group">
+                         <input type="range" min="0" max="100" value="0" id="l" />
+                     </div>
+                  </form>
                </div>
-               <div class="form-group">
-                   <input type="range" min="0" max="255" value="{{ b }}" id="b" />
-               </div>
-            </form>
-         </div>
-      </div>
-   </div>
-   <div class="col-md-4">
-      <div class="panel panel-default">
-         <div class="panel-heading">
-            <h3 class="panel-title">HSL</h3>
-         </div>
-         <div class="panel-body">
-            <form role="form">
-               <div class="form-group">
-                   <input type="range" min="0" max="360" value="0" id="h" />
-               </div>
-               <div class="form-group">
-                   <input type="range" min="0" max="100" value="0" id="s" />
-               </div>
-               <div class="form-group">
-                   <input type="range" min="0" max="100" value="0" id="l" />
-               </div>
-            </form>
+            </div>
          </div>
       </div>
    </div>
