@@ -96,7 +96,7 @@ def fade_step():
 
    need_more = False
    controller_set = set()
-   for pixel in pixels:
+   for pixel in pixels.values():
       if isinstance(pixel, RgbPixel):
          if pixel.step():
             need_more = True
@@ -105,7 +105,7 @@ def fade_step():
       controller.sync()
 
    if need_more:
-      ioloop.add_timeout(timedelta(milliseconds=25))
+      ioloop.add_timeout(timedelta(milliseconds=25), fade_step)
    else:
       fade_in_progress = False
 
