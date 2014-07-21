@@ -1,5 +1,8 @@
 from abc import ABCMeta, abstractmethod
+from math import copysign
 import re
+
+MAX_STEP_SIZE = 10
 
 class Channel(object):
    def __init__(self, name, controller, value=0):
@@ -10,14 +13,14 @@ class Channel(object):
    def set(self, new_value):
       self.value = new_value
 
-   def fade(self, new_value):
-      self.fade_start = self.value
-      self.fade_end = new_value
+   def set_target(self, new_value):
+      self.target_value = new_value
 
-   def fade_progress(self, progress):
-      assert progress >= 0 and progress <= 1
-      self.value = int(self.fade_start * (1 - progress) +
-                       self.fade_end * progress)
+   def step(self):
+      diff = self.target_value - self.value
+      diff = copysign(max(MAX_STEP_SIZE, abs(diff)), diff)
+      self.value += diff
+      return self.value != self.target_value
 
    def get(self):
       return self.value
@@ -34,15 +37,6 @@ class Channel(object):
    def __str__(self):
       return "<Channel %s>" % self.name
 
-hex_triplet_pattern = re.compile(r'^#([0-9a-fA-F]{6})$')
-def parse_html_color(color):
-   match = hex_triplet_pattern.match(color)
-   if match:
-      value = int(match.group(1), 16)
-      return value >> 16, value >> 8 & 0xff, value & 0xff
-   else:
-      raise ValueError('Invalid color')
-
 class Pixel(object):
    __metaclass__ = ABCMeta
 
@@ -53,18 +47,12 @@ class Pixel(object):
    def set(self, red, green, blue):
       pass
 
-   def set_html_color(self, color):
-      self.set(*parse_html_color(color))
-
    @abstractmethod
-   def fade(self, red, green, blue):
+   def set_target(self, red, green, blue):
       pass
 
-   def fade_html_color(self, color):
-      self.fade(*parse_html_color(color))
-
    @abstractmethod
-   def fade_progress(self, progress):
+   def step(self):
       pass
 
    @abstractmethod
@@ -105,15 +93,14 @@ class RgbPixel(Pixel):
       self.green.set(green)
       self.blue.set(blue)
 
-   def fade(self, red, green, blue):
-      self.red.fade(red)
-      self.green.fade(green)
-      self.blue.fade(blue)
+   def set_target(self, red, green, blue):
+      self.red.set_target(red)
+      self.green.set_target(green)
+      self.blue.set_target(blue)
 
-   def fade_progress(self, progress):
-      self.red.fade_progress(progress)
-      self.green.fade_progress(progress)
-      self.blue.fade_progress(progress)
+   def step(self):
+      results = (self.red.step(), self.green.step(), self.blue.step())
+      return any(results)
 
    def get(self):
       return self.red.get(), self.green.get(), self.blue.get()
@@ -136,13 +123,13 @@ class PixelSet(Pixel):
       for pixel in self.pixels:
          pixel.set(red, green, blue)
 
-   def fade(self, red, green, blue):
+   def set_target(self, red, green, blue):
       for pixel in self.pixels:
-         pixel.fade(red, green, blue)
+         pixel.set_target(red, green, blue)
 
-   def fade_progress(self, progress):
-      for pixel in self.pixels:
-         pixel.fade_progress(progress)
+   def step(self):
+      results = [pixel.step() for pixel in self.pixels]
+      return any(results)
 
    def get(self):
       values = [pixel.get() for pixel in self.pixels]

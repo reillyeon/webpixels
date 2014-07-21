@@ -89,15 +89,34 @@ def redirect_url():
                    request.referrer or \
                    url_for('index'))
 
-def fade_callback(iteration, pixel_set, controller_set):
-   for pixel in pixel_set:
-      pixel.fade_progress(iteration / 39)
+fade_in_progress = False
+
+def fade_step():
+   global fade_in_progress
+
+   need_more = False
+   controller_set = set()
+   for pixel in pixels:
+      if isinstance(pixel, RgbPixel):
+         if pixel.step():
+            need_more = True
+
    for controller in controller_set:
       controller.sync()
-   iteration += 1
-   if iteration < 40:
-      ioloop.add_timeout(timedelta(milliseconds=25),
-                         fade_callback, iteration, pixel_set, controller_set)
+
+   if need_more:
+      ioloop.add_timeout(timedelta(milliseconds=25))
+   else:
+      fade_in_progress = False
+
+def start_fade():
+   global fade_in_progress
+
+   if fade_in_progress:
+      return
+
+   fade_in_progress = True
+   fade_step()
 
 @app.route('/', methods=['GET'])
 def index():
@@ -137,9 +156,8 @@ def pixel_post(pixel):
    g = int(request.form['g'])
    b = int(request.form['b'])
 
-   pixel.fade(r, g, b)
-
-   ioloop.add_callback(fade_callback, 0, { pixel }, pixel.get_controllers())
+   pixel.set_target(r, g, b)
+   start_fade()
 
    return ""
 
@@ -149,54 +167,6 @@ def pixel_get(pixel):
    return render_template('pixel.html',
                           pixel=pixel.get_name(),
                           r=r, g=g, b=b)
-
-@app.route('/pixels', methods=['POST'])
-def pixels_post():
-   pixel_set = []
-   controller_set = set()
-   for name, pixel in pixels.items():
-      key = 'color_%s' % name
-      if key in request.form.keys():
-         pixel = pixels[name]
-         pixel.fade_html_color(request.form[key])
-         pixel_set.append(pixel)
-         controller_set.update(pixel.get_controllers())
-
-   ioloop.add_callback(fade_callback, 0, pixel_set, controller_set)
-
-   return redirect_url()
-
-@app.route('/channel/<channel>', methods=['GET', 'POST'])
-def channel(channel):
-   channel = channels[channel]
-   if request.method == 'POST':
-      return channel_post(channel)
-   else:
-      return channel_get(channel)
-
-def channel_post(channel):
-   channel.set(int(request.form['value']))
-   channel.sync()
-
-   return redirect_url()
-
-def channel_get(channel):
-   return render_template('channel.html',
-                          channel=channel.get_name(),
-                          value=channel.get())
-
-@app.route('/channels', methods=['POST'])
-def channels_post():
-   controllers = set()
-   for name, channel in channels.items():
-      if name in request.form.keys():
-         channel.set(int(request.form[name]))
-         controllers.add(channel.get_controller())
-
-   for controller in controllers:
-      controller.sync()
-
-   return redirect_url()
 
 @app.route('/presets', methods=['GET'])
 def preset_list():
@@ -234,11 +204,9 @@ def preset_apply():
 
    for name, value in preset.items():
       pixel = pixels[name]
-      pixel.fade(*value)
-      pixel_set.append(pixel)
-      controller_set.update(pixel.get_controllers())
+      pixel.set_target(*value)
 
-   ioloop.add_callback(fade_callback, 0, pixel_set, controller_set)
+   start_fade()
 
    global last_preset
    last_preset = name
