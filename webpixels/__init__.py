@@ -18,8 +18,8 @@ class Channel(object):
 
    def step(self):
       diff = self.target_value - self.value
-      diff = copysign(max(MAX_STEP_SIZE, abs(diff)), diff)
-      self.value += diff
+      diff = copysign(min(MAX_STEP_SIZE, abs(diff)), diff)
+      self.value += int(diff)
       return self.value != self.target_value
 
    def get(self):

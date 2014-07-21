@@ -100,6 +100,7 @@ def fade_step():
       if isinstance(pixel, RgbPixel):
          if pixel.step():
             need_more = True
+         controller_set.update(pixel.get_controllers())
 
    for controller in controller_set:
       controller.sync()
@@ -199,8 +200,6 @@ def preset_save():
 def preset_apply():
    name = request.form['preset']
    preset = presets[name]
-   pixel_set = []
-   controller_set = set()
 
    for name, value in preset.items():
       pixel = pixels[name]
