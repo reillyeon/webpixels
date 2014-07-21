@@ -264,5 +264,5 @@ if __name__ == '__main__':
 
    app.debug = True
    http_server = HTTPServer(WSGIContainer(app))
-   http_server.listen(8080)
+   http_server.listen(80)
    ioloop.start()
