@@ -90,7 +90,6 @@ def redirect_url():
                    url_for('index'))
 
 def fade_callback(iteration, pixel_set, controller_set):
-   print(iteration)
    for pixel in pixel_set:
       pixel.fade_progress(iteration / 39)
    for controller in controller_set:
