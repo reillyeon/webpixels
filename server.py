@@ -1,10 +1,14 @@
+from datetime import timedelta
 from flask import Flask, redirect, render_template, request, url_for
 import json
-import time
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
+from tornado.wsgi import WSGIContainer
 from webpixels import PixelSet, RgbPixel
 from webpixels.controller import ColorKinetics
 
 app = Flask(__name__)
+ioloop = IOLoop.instance()
 
 config_file = None
 
@@ -85,6 +89,17 @@ def redirect_url():
                    request.referrer or \
                    url_for('index'))
 
+def fade_callback(iteration, pixel_set, controller_set):
+   print(iteration)
+   for pixel in pixel_set:
+      pixel.fade_progress(iteration / 39)
+   for controller in controller_set:
+      controller.sync()
+   iteration += 1
+   if iteration < 40:
+      ioloop.add_timeout(timedelta(milliseconds=25),
+                         fade_callback, iteration, pixel_set, controller_set)
+
 @app.route('/', methods=['GET'])
 def index():
    all_pixels = pixels['all'].get_html_color()
@@ -119,21 +134,13 @@ def pixel(pixel):
       return pixel_get(pixel)
 
 def pixel_post(pixel):
-   immediate = 'immediate' in request.form.keys() and \
-      request.form['immediate'] == 'true'
    r = int(request.form['r'])
    g = int(request.form['g'])
    b = int(request.form['b'])
 
-   if immediate:
-      pixel.set(r, g, b)
-      pixel.sync()
-   else:
-      pixel.fade(r, g, b)
-      for i in range(40):
-         time.sleep(0.025)
-         pixel.fade_progress(i / 39)
-         pixel.sync()
+   pixel.fade(r, g, b)
+
+   ioloop.add_callback(fade_callback, 0, { pixel }, pixel.get_controllers())
 
    return ""
 
@@ -147,21 +154,16 @@ def pixel_get(pixel):
 @app.route('/pixels', methods=['POST'])
 def pixels_post():
    pixel_set = []
-   controllers = set()
+   controller_set = set()
    for name, pixel in pixels.items():
       key = 'color_%s' % name
       if key in request.form.keys():
          pixel = pixels[name]
          pixel.fade_html_color(request.form[key])
          pixel_set.append(pixel)
-         controllers.update(pixel.get_controllers())
+         controller_set.update(pixel.get_controllers())
 
-   for i in range(40):
-      time.sleep(0.025)
-      for pixel in pixel_set:
-         pixel.fade_progress(i / 39)
-      for controller in controllers:
-         controller.sync()
+   ioloop.add_callback(fade_callback, 0, pixel_set, controller_set)
 
    return redirect_url()
 
@@ -237,12 +239,7 @@ def preset_apply():
       pixel_set.append(pixel)
       controller_set.update(pixel.get_controllers())
 
-   for i in range(40):
-      time.sleep(0.025)
-      for pixel in pixel_set:
-         pixel.fade_progress(i / 39)
-      for controller in controller_set:
-         controller.sync()
+   ioloop.add_callback(fade_callback, 0, pixel_set, controller_set)
 
    global last_preset
    last_preset = name
@@ -266,4 +263,6 @@ if __name__ == '__main__':
    load_config(config_file)
 
    app.debug = True
-   app.run(host='0.0.0.0', port=80)
+   http_server = HTTPServer(WSGIContainer(app))
+   http_server.listen(80)
+   ioloop.start()
