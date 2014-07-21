@@ -14,6 +14,7 @@ config_file = None
 
 channels = {}
 pixels = {}
+fixtures = {}
 presets = {}
 last_preset = None
 
@@ -36,11 +37,10 @@ def load_config(config_file):
    for name, fixtureConfig in config['fixtures'].items():
       pixel_set = [pixels[pixel] for pixel in fixtureConfig['pixels']]
       fixture = PixelSet(name, pixel_set)
-      pixels[fixture.get_name()] = fixture
+      fixtures[fixture.get_name()] = fixture
 
-   all_pixels = [pixel for pixel in pixels.values()
-                 if not isinstance(pixel, PixelSet)]
-   pixels['all'] = PixelSet('all', all_pixels)
+   global all_pixel
+   all_pixel = PixelSet('all', pixels.values())
 
    if 'presets' in config:
       presets.update(config['presets'])
@@ -53,18 +53,18 @@ def save_config(config_file):
 
    for pixel in pixels.values():
       controller_set.update(pixel.get_controllers())
-      if isinstance(pixel, RgbPixel):
-         saved_pixels[pixel.get_name()] = {
-            'channels': [
-               pixel.red.get_name(),
-               pixel.green.get_name(),
-               pixel.blue.get_name()
-            ]
-         }
-      elif isinstance(pixel, PixelSet) and pixel.get_name() != 'all':
-         saved_fixtures[pixel.get_name()] = {
-            'pixels': [subpixel.get_name() for subpixel in pixel.get_pixels()]
-         }
+      saved_pixels[pixel.get_name()] = {
+         'channels': [
+            pixel.red.get_name(),
+            pixel.green.get_name(),
+            pixel.blue.get_name()
+         ]
+      }
+
+   for fixture in fixtures.values():
+      saved_fixtures[fixture.get_name()] = {
+         'pixels': [subpixel.get_name() for subpixel in fixture.get_pixels()]
+      }
 
    for controller in controller_set:
       if isinstance(controller, ColorKinetics):
@@ -97,10 +97,9 @@ def fade_step():
    need_more = False
    controller_set = set()
    for pixel in pixels.values():
-      if isinstance(pixel, RgbPixel):
-         if pixel.step():
-            need_more = True
-         controller_set.update(pixel.get_controllers())
+      if pixel.step():
+         need_more = True
+      controller_set.update(pixel.get_controllers())
 
    for controller in controller_set:
       controller.sync()
@@ -121,18 +120,8 @@ def start_fade():
 
 @app.route('/', methods=['GET'])
 def index():
-   all_pixels = pixels['all'].get_html_color()
-
-   pixel_list = [(name, pixel.get_html_color())
-                 for name, pixel in pixels.items()
-                 if not isinstance(pixel, PixelSet)]
-   pixel_list.sort(key=lambda pixel: pixel[0])
-
    fixture_list = []
-   for name, fixture in pixels.items():
-      if (not isinstance(fixture, PixelSet)) or name == "all":
-         continue
-
+   for name, fixture in fixtures.items():
       subpixels = [(pixel.get_name(), pixel.get_html_color())
                    for pixel in fixture.get_pixels()]
       fixture_list.append((name, fixture.get_html_color(), subpixels))
@@ -141,12 +130,15 @@ def index():
 
 
    return render_template('index.html',
-                          all=pixels['all'].get_html_color(),
+                          all=all_pixel.get_html_color(),
                           fixtures=fixture_list)
 
-@app.route('/pixel/<pixel>', methods=['GET', 'POST'])
-def pixel(pixel):
-   pixel = pixels[pixel]
+@app.route('/pixel/<name>', methods=['GET', 'POST'])
+def pixel(name):
+   pixel = fixtures.get(name)
+   if pixel is None:
+      pixel = pixels[name]
+
    if request.method == 'POST':
       return pixel_post(pixel)
    else:
@@ -183,16 +175,13 @@ def preset_save():
    preset = {}
 
    for name, pixel in pixels.items():
-      if isinstance(pixel, PixelSet):
-         continue
-
       preset[name] = pixel.get()
 
    presets[request.form['name']] = preset
    save_config(config_file)
 
    global last_preset
-   last_preset = request.form['preset']
+   last_preset = request.form['name']
 
    return ""
 

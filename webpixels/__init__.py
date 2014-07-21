@@ -9,25 +9,22 @@ class Channel(object):
       self.name = name
       self.controller = controller
       self.value = value
-      self.target_value = None
+      self.target_value = value
 
    def set(self, new_value):
-      self.value = new_value
+      self.value, self.target_value = new_value, new_value
 
    def set_target(self, new_value):
       self.target_value = new_value
 
    def step(self):
-      if self.target_value is None:
-         return
-
-      diff = self.target_value - self.value
-      diff = copysign(min(MAX_STEP_SIZE, abs(diff)), diff)
-      self.value += int(diff)
-
       if self.value == self.target_value:
-         self.target_value = None
          return False
+
+      if self.value < self.target_value:
+         self.value += min(MAX_STEP_SIZE, self.target_value - self.value)
+      else:
+         self.value -= min(MAX_STEP_SIZE, self.value - self.target_value)
       return True
 
    def get(self):
