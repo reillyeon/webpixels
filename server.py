@@ -135,9 +135,12 @@ def index():
 
 @app.route('/pixel/<name>', methods=['GET', 'POST'])
 def pixel(name):
-   pixel = fixtures.get(name)
-   if pixel is None:
-      pixel = pixels[name]
+   if name == 'all':
+      pixel = all_pixel
+   else:
+      pixel = fixtures.get(name)
+      if pixel is None:
+         pixel = pixels[name]
 
    if request.method == 'POST':
       return pixel_post(pixel)
